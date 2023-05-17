@@ -1,4 +1,7 @@
 from flask import Flask, make_response, jsonify, request
+from random import choice, randint
+from string import ascii_letters, punctuation
+from device import Printer
 
 app = Flask(__name__)
 
@@ -32,10 +35,10 @@ def dict_comp():
 
 
 class Student:
-    def __init__(self):
-        self.name = None
-        self.age = None
-        self.email = None
+    def __init__(self, name, age, email):
+        self.name = name
+        self.age = age
+        self.email = email
 
     def is_legal_to_drink(self):
         if self.age > 18:
@@ -45,22 +48,52 @@ class Student:
 
     def __str__(self):
         return f"""name: {self.name}\nage: {self.age}\nemail: {self.email}"""
+    
+    @classmethod
+    def class_method(cls):
+        print(f"called class_method of {cls}")
+
+    @staticmethod
+    def static_method():
+        print(f"called static method")
+
+    # factory method
+    @classmethod
+    def createStudent(cls, name: str, age):
+        random_str = ""
+        for i in range(4):
+            random_str += choice(ascii_letters)     
+        assign_email = f"{name.replace(' ', '')}{choice(punctuation)}{age * randint(1, 8)}{random_str}@mymail.com"
+        return Student(name, age, assign_email)
 
 
-student = Student()
-student.name = "Shashi"
-student.age = 29
-student.email = "skujur871@gmail.com"
-print(student.__dict__)
+# student = Student()
+# student.name = "Shashi"
+# student.age = 29
+# student.email = "skujur871@gmail.com"
+# print(student.__dict__)
 
 @app.get('/student')
 def student():
-    st1 = Student()
-    st1.name = "Bhushan"
-    st1.age = 29
-    st1.email = "bhushanDrinker@gmail.com"
+    # st1 = Student()
+    # st1.name = "Bhushan"
+    # st1.age = 29
+    # st1.email = "bhushanDrinker@gmail.com"
 
-    is_eligible = st1.is_legal_to_drink()
-    print(is_eligible)
-    print()
-    return st1.__dict__
+    # is_eligible = st1.is_legal_to_drink()
+    # print(is_eligible)
+    # st1.class_method()
+    Student.static_method()
+
+    st2 = Student.createStudent("Shashi Bhagat", 29)
+    print(st2)
+
+    printer = Printer("Printer", "USB", capacity=400)
+    printer.print_pages(3, ['Im going to print', "this is feeling awesome"])
+    print(printer)
+    printer.print_pages(3, ['new data to print', "this is data is old 😘"])
+    print(printer)
+    printer.disconnect()
+    printer.print_pages(3, ['new data to print', "this is data is old 😘"])
+    return st2.__dict__
+
