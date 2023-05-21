@@ -1,4 +1,6 @@
 class Device():
+    """ Its an generic device class to connect and disconnect. """
+
     def __init__(self, name: str, connected_by: str):
         self.name = name
         self.connected_by = connected_by
@@ -14,6 +16,8 @@ class Device():
 
 
 class Printer(Device):
+    """Its an Printer class that prints data passesd"""
+
     def __init__(self, name: str, connected_by: str, capacity: int):
         super().__init__(name=name, connected_by=connected_by)
         self.capacity = capacity
@@ -21,7 +25,7 @@ class Printer(Device):
 
     def __str__(self):
         return f"{super().__str__()} \n{self.remaining_pages} pages remaining"
-    
+
     def print_pages(self, page: int, data: list[str]):
         if self.is_connected:
             self.remaining_pages -= page
