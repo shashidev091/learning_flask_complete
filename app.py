@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify, request
+from flask import Flask, make_response, jsonify, request, render_template
 from random import choice, randint
 from string import ascii_letters, punctuation
 from device import Printer
@@ -21,6 +21,7 @@ def home():
 def add(a, b):
     return a + b
 
+
 def dict_comp():
     users = [
         (1, "Rob", "password"),
@@ -29,7 +30,7 @@ def dict_comp():
 
     users_mapping = {user[1]: user for user in users}
     print(users_mapping)
-    
+
     id, username, password = users_mapping["Rob"]
     print(id, username, password)
 
@@ -48,21 +49,23 @@ class Student:
 
     def __str__(self):
         return f"""name: {self.name}\nage: {self.age}\nemail: {self.email}"""
-    
+
     @classmethod
     def class_method(cls):
         print(f"called class_method of {cls}")
 
     @staticmethod
-    def static_method():
-        print(f"called static method")
+    def static_method() -> None:
+        """static method"""
+        print("called static method")
 
     # factory method
     @classmethod
-    def createStudent(cls, name: str, age):
+    def create_student(cls, name: str, age) -> object:
+        """this class method creates Student Object"""
         random_str = ""
-        for i in range(4):
-            random_str += choice(ascii_letters)     
+        for _ in range(4):
+            random_str += choice(ascii_letters)
         assign_email = f"{name.replace(' ', '')}{choice(punctuation)}{age * randint(1, 8)}{random_str}@mymail.com"
         return Student(name, age, assign_email)
 
@@ -97,3 +100,7 @@ def student():
     printer.print_pages(3, ['new data to print', "this is data is old 😘"])
     return st2.__dict__
 
+
+@app.get('/login')
+def login():
+    return render_template('login.html', title="login here")
