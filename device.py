@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class Device():
     """ Its an generic device class to connect and disconnect. """
@@ -38,7 +38,7 @@ class Printer(Device):
 
 class BookShelf:
     def __init__(self):
-        self.books: List  = []
+        self.books: Optional[List]  = []
     
     def add_books(self, book):
         self.books.append(book)
