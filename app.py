@@ -1,7 +1,7 @@
 from flask import Flask, make_response, jsonify, request, render_template
 from random import choice, randint
 from string import ascii_letters, punctuation
-from device import Printer
+from device import Printer, BookStore, Book
 
 app = Flask(__name__)
 
@@ -104,3 +104,20 @@ def student():
 @app.get('/login')
 def login():
     return render_template('login.html', title="login here")
+
+
+@app.get('/books')
+def get_books():
+    bookStore = BookStore()
+    return bookStore.books
+
+@app.put('/add-book')
+def add_book():
+    req: dict = request.get_json()
+    book = Book(title=req.get('title'), total_pages=req.get('no_pages'), author=req.get('author'), price=req.get("price"))
+    store = BookStore()
+    store.add_books(book=book)
+    # for book in store.books:
+    #     print(book)
+    print(store.books)
+    return jsonify(store.get_books())
