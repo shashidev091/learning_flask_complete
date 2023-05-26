@@ -14,7 +14,7 @@ APP_ROOT = app.root_path
 DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
 
 
-# todo app
+# get todos
 @app.get('/todos')
 def get_todos():
     df = read_csv(DATA_FILE)
@@ -57,4 +57,5 @@ def add_todo():
 
 @app.patch('/todos')
 def update_todo():
+    # complete today
     pass
