@@ -38,7 +38,7 @@ class Printer(Device):
 
 class BookShelf:
     def __init__(self):
-        self.books: Optional[List]  = []
+        self.books: List  = []
     
     def add_books(self, book):
         self.books.append(book)
