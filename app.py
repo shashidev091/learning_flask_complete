@@ -6,6 +6,7 @@ from pandas import DataFrame, read_csv, concat
 from typing import Dict
 from os import path, listdir
 import csv
+import json
 
 
 app = Flask(__name__)
@@ -16,8 +17,19 @@ DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
 # todo app
 @app.get('/todos')
 def get_todos():
+    df = read_csv(DATA_FILE)
+    todos_json_str = df.to_json()
+    todos_json: Dict = json.loads(todos_json_str)
 
-    return "todos will show up here"
+    todos = []
+
+    data = [list(item.values()) for item in list(todos_json.values())]
+    for todo in zip(*data):
+        temp_dict = {}
+        for idx, key in enumerate(list(todos_json.keys())):
+            temp_dict[key] = todo[idx]
+        todos.append(temp_dict)
+    return todos
 
 
 @app.put('/todos')
@@ -42,3 +54,7 @@ def add_todo():
     except Exception as e:
         print(e)
     return 'todo added'
+
+@app.patch('/todos')
+def update_todo():
+    pass
