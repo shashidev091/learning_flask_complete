@@ -1,12 +1,14 @@
-task,status,created_at
+id,task,status,created_at
 
-login at 9:00am time,pending,now
+1,login at 9:00am time,pending,now
 
-logout at 7:00pm time,pending,tommorow
+2,logout at 7:00pm time,pending,tommorow
 
-start studing data science,pending,yesteday
+3,start studing data science,pending,yesteday
 
-use writing pad,pending,now
+4,use writing pad,pending,now
 
-Play PUBG for 2 hours,pending,now
+5,Play PUBG for 2 hours,pending,now
+
+6,Eat chicken and beer,pending,now
 

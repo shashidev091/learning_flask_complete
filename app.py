@@ -4,7 +4,7 @@ from string import ascii_letters, punctuation
 from device import Printer, BookStore, Book
 from pandas import DataFrame, read_csv, concat
 from typing import Dict
-from os import path, listdir
+from os import path, listdir, remove
 import csv
 import json
 
@@ -36,26 +36,61 @@ def get_todos():
 def add_todo():
     req: Dict = request.get_json()
     try:
+        with open(DATA_FILE, 'r') as csv_reader:
+            tasks = [task.split(',')[0] for task in csv_reader.readlines()]
+            if req.get('task') in tasks:
+                return f"task {req.get('task')}, already exists 🚫"
         if len(listdir(path.join(APP_ROOT, 'server_database'))) == 0:
             with open(DATA_FILE, 'w') as csv_file:
                 csv_writer = csv.writer(csv_file)
+                keys_with_id = list(req.keys()).insert(0, 'id')
                 csv_writer.writerows(
-                    [list(req.keys()), [req.get('task'), req.get('status'), req.get('created_at')]])
+                    [keys_with_id, [len(fetch_data_from_database().index) + 1, req.get('task'), req.get('status'), req.get('created_at')]])
         else:
-            with open(DATA_FILE, 'r') as csv_reader:
-                tasks = [task.split(',')[0] for task in csv_reader.readlines()]
-                print(tasks)
-                if req.get('task') in tasks:
-                    return f"task {req.get('task')}, already exists 🚫"
+
             with open(DATA_FILE, 'a') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow(
-                    [req.get('task'), req.get('status'), req.get('created_at')])
+                    [len(fetch_data_from_database().index) + 1, req.get('task'), req.get('status'), req.get('created_at')])
     except Exception as e:
         print(e)
     return 'todo added'
 
-@app.patch('/todos')
-def update_todo():
+
+@app.patch('/todos/<int:task_id>')
+def update_todo(task_id):
     # complete today
-    pass
+    df = fetch_data_from_database()
+    element = df[df['id'] == task_id]
+    # print(df.loc[task_id - 1])
+    element["task"] = "This world need a great developer who can unleash the power of clustering in pc."
+    print(element['task'])
+    if element.empty:
+        return f"task_id = {task_id} not found, enter valid task id.🦥"
+    else:
+        remove(DATA_FILE)
+        todos = get_todos()
+        with open(DATA_FILE, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            
+    return element.to_json()
+
+
+def fetch_data_from_database() -> DataFrame:
+    """This file return csv file that is being treated as database and return type is Dataframe"""
+    if len(listdir(path.join(APP_ROOT, 'server_database'))) > 0:
+        df = read_csv(DATA_FILE)
+        return df
+    else:
+        return -1
+
+def convert_df_json(df: DataFrame):
+    todos = []
+    todos_json: Dict = json.loads(df.to_json())
+    data = [list(item.values()) for item in list(todos_json.values())]
+    for todo in zip(*data):
+        temp_dict = {}
+        for idx, key in enumerate(list(todos_json.keys())):
+            temp_dict[key] = todo[idx]
+        todos.append(temp_dict)
+    return todos
