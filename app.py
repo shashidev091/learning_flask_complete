@@ -36,24 +36,26 @@ def get_todos():
 def add_todo():
     req: Dict = request.get_json()
     try:
-        with open(DATA_FILE, 'r') as csv_reader:
-            tasks = [task.split(',')[0] for task in csv_reader.readlines()]
-            if req.get('task') in tasks:
-                return f"task {req.get('task')}, already exists 🚫"
+        if len(listdir(path.join(APP_ROOT, 'server_database'))) != 0:
+            with open(DATA_FILE, 'r') as csv_reader:
+                tasks = [task.split(',')[0] for task in csv_reader.readlines()]
+                if req.get('task') in tasks:
+                    return f"task {req.get('task')}, already exists 🚫"
         if len(listdir(path.join(APP_ROOT, 'server_database'))) == 0:
             with open(DATA_FILE, 'w') as csv_file:
                 csv_writer = csv.writer(csv_file)
-                keys_with_id = list(req.keys()).insert(0, 'id')
-                csv_writer.writerows(
-                    [keys_with_id, [len(fetch_data_from_database().index) + 1, req.get('task'), req.get('status'), req.get('created_at')]])
+                header = list(req.keys())
+                header.insert(0, 'id')
+                csv_writer.writerow(header)
+                csv_writer.writerow(
+                    [1, req.get('task'), req.get('status'), req.get('created_at')])
         else:
-
             with open(DATA_FILE, 'a') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow(
                     [len(fetch_data_from_database().index) + 1, req.get('task'), req.get('status'), req.get('created_at')])
     except Exception as e:
-        print(e)
+        return str(e)
     return 'todo added'
 
 
@@ -68,11 +70,11 @@ def update_todo(task_id):
     if element.empty:
         return f"task_id = {task_id} not found, enter valid task id.🦥"
     else:
-        remove(DATA_FILE)
         todos = get_todos()
+        remove(DATA_FILE)
         with open(DATA_FILE, 'w') as csv_file:
             csv_writer = csv.writer(csv_file)
-            
+
     return element.to_json()
 
 
@@ -83,6 +85,7 @@ def fetch_data_from_database() -> DataFrame:
         return df
     else:
         return -1
+
 
 def convert_df_json(df: DataFrame):
     todos = []
