@@ -2,122 +2,98 @@ from flask import Flask, make_response, jsonify, request, render_template
 from random import choice, randint
 from string import ascii_letters, punctuation
 from device import Printer, BookStore, Book
+from pandas import DataFrame, read_csv, concat
+from typing import Dict
+from os import path, listdir, remove
+import csv
+import json
+
 
 app = Flask(__name__)
+APP_ROOT = app.root_path
+DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
 
 
-@app.get('/')
-def home():
-    # lambda functions
-    # funtions that does not have name
-    (lambda x, y: x + y)(4, 7)
-    seq = [1, 3, 5, 3, 5]
-    print(list(map(lambda x: x * 2, seq)))
-    print([i * 2 for i in seq])
-    dict_comp()
-    return 'welcome to Flask'
+# get todos
+@app.get('/todos')
+def get_todos():
+    df = read_csv(DATA_FILE)
+    todos_json_str = df.to_json()
+    todos_json: Dict = json.loads(todos_json_str)
+
+    todos = []
+
+    data = [list(item.values()) for item in list(todos_json.values())]
+    for todo in zip(*data):
+        temp_dict = {}
+        for idx, key in enumerate(list(todos_json.keys())):
+            temp_dict[key] = todo[idx]
+        todos.append(temp_dict)
+    return todos
 
 
-def add(a, b):
-    return a + b
-
-
-def dict_comp():
-    users = [
-        (1, "Rob", "password"),
-        (2, "Mob", "mob12312")
-    ]
-
-    users_mapping = {user[1]: user for user in users}
-    print(users_mapping)
-
-    id, username, password = users_mapping["Rob"]
-    print(id, username, password)
-
-
-class Student:
-    def __init__(self, name, age, email):
-        self.name = name
-        self.age = age
-        self.email = email
-
-    def is_legal_to_drink(self):
-        if self.age > 18:
-            return True
+@app.put('/todos')
+def add_todo():
+    req: Dict = request.get_json()
+    try:
+        if len(listdir(path.join(APP_ROOT, 'server_database'))) != 0:
+            with open(DATA_FILE, 'r') as csv_reader:
+                tasks = [task.split(',')[0] for task in csv_reader.readlines()]
+                if req.get('task') in tasks:
+                    return f"task {req.get('task')}, already exists 🚫"
+        if len(listdir(path.join(APP_ROOT, 'server_database'))) == 0:
+            with open(DATA_FILE, 'w') as csv_file:
+                csv_writer = csv.writer(csv_file)
+                header = list(req.keys())
+                header.insert(0, 'id')
+                csv_writer.writerow(header)
+                csv_writer.writerow(
+                    [1, req.get('task'), req.get('status'), req.get('created_at')])
         else:
-            False
-
-    def __str__(self):
-        return f"""name: {self.name}\nage: {self.age}\nemail: {self.email}"""
-
-    @classmethod
-    def class_method(cls):
-        print(f"called class_method of {cls}")
-
-    @staticmethod
-    def static_method() -> None:
-        """static method"""
-        print("called static method")
-
-    # factory method
-    @classmethod
-    def create_student(cls, name: str, age) -> object:
-        """this class method creates Student Object"""
-        random_str = ""
-        for _ in range(4):
-            random_str += choice(ascii_letters)
-        assign_email = f"{name.replace(' ', '')}{choice(punctuation)}{age * randint(1, 8)}{random_str}@mymail.com"
-        return Student(name, age, assign_email)
+            with open(DATA_FILE, 'a') as csv_file:
+                csv_writer = csv.writer(csv_file)
+                csv_writer.writerow(
+                    [len(fetch_data_from_database().index) + 1, req.get('task'), req.get('status'), req.get('created_at')])
+    except Exception as e:
+        return str(e)
+    return 'todo added'
 
 
-# student = Student()
-# student.name = "Shashi"
-# student.age = 29
-# student.email = "skujur871@gmail.com"
-# print(student.__dict__)
+@app.patch('/todos/<int:task_id>')
+def update_todo(task_id):
+    # complete today
+    df = fetch_data_from_database()
+    element = df[df['id'] == task_id]
+    # print(df.loc[task_id - 1])
+    element["task"] = "This world need a great developer who can unleash the power of clustering in pc."
+    print(element['task'])
+    if element.empty:
+        return f"task_id = {task_id} not found, enter valid task id.🦥"
+    else:
+        todos = get_todos()
+        remove(DATA_FILE)
+        with open(DATA_FILE, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
 
-@app.get('/student')
-def student():
-    # st1 = Student()
-    # st1.name = "Bhushan"
-    # st1.age = 29
-    # st1.email = "bhushanDrinker@gmail.com"
-
-    # is_eligible = st1.is_legal_to_drink()
-    # print(is_eligible)
-    # st1.class_method()
-    Student.static_method()
-
-    st2 = Student.createStudent("Shashi Bhagat", 29)
-    print(st2)
-
-    printer = Printer("Printer", "USB", capacity=400)
-    printer.print_pages(3, ['Im going to print', "this is feeling awesome"])
-    print(printer)
-    printer.print_pages(3, ['new data to print', "this is data is old 😘"])
-    print(printer)
-    printer.disconnect()
-    printer.print_pages(3, ['new data to print', "this is data is old 😘"])
-    return st2.__dict__
+    return element.to_json()
 
 
-@app.get('/login')
-def login():
-    return render_template('login.html', title="login here")
+def fetch_data_from_database() -> DataFrame:
+    """This file return csv file that is being treated as database and return type is Dataframe"""
+    if len(listdir(path.join(APP_ROOT, 'server_database'))) > 0:
+        df = read_csv(DATA_FILE)
+        return df
+    else:
+        return -1
 
 
-@app.get('/books')
-def get_books():
-    bookStore = BookStore()
-    return bookStore.books
-
-@app.put('/add-book')
-def add_book():
-    req: dict = request.get_json()
-    book = Book(title=req.get('title'), total_pages=req.get('no_pages'), author=req.get('author'), price=req.get("price"))
-    store = BookStore()
-    store.add_books(book=book)
-    # for book in store.books:
-    #     print(book)
-    print(store.books)
-    return jsonify(store.get_books())
+def convert_df_json(df: DataFrame):
+    todos = []
+    todos_json: Dict = json.loads(df.to_json())
+    data = [list(item.values()) for item in list(todos_json.values())]
+    for todo in zip(*data):
+        temp_dict = {}
+        for idx, key in enumerate(list(todos_json.keys())):
+            temp_dict[key] = todo[idx]
+        todos.append(temp_dict)
+    return todos

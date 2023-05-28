@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 class Device():
     """ Its an generic device class to connect and disconnect. """
