@@ -7,7 +7,7 @@ from typing import Dict
 from os import path, listdir, remove
 import csv
 import json
-from utils import fetch_data_from_database, convert_df_json
+from utils import fetch_data_from_database, convert_df_json, task_moment
 
 app = Flask(__name__)
 APP_ROOT = app.root_path
@@ -48,12 +48,12 @@ def add_todo():
                 header.insert(0, 'id')
                 csv_writer.writerow(header)
                 csv_writer.writerow(
-                    [1, req.get('task'), req.get('status'), req.get('created_at')])
+                    [1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower()) ])
         else:
             with open(DATA_FILE, 'a') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow(
-                    [len(fetch_data_from_database(APP_ROOT, DATA_FILE).index) + 1, req.get('task'), req.get('status'), req.get('created_at')])
+                    [len(fetch_data_from_database(APP_ROOT, DATA_FILE).index) + 1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower())])
     except Exception as e:
         return str(e)
     return 'todo added'
@@ -72,5 +72,3 @@ def update_todo(task_id):
         print("")
 
     return element.to_json()
-
-
