@@ -1,6 +1,8 @@
 from os import path, listdir, remove
 from pandas import DataFrame, read_csv
 from typing import Dict
+from enum import Enum
+from datetime import datetime, timedelta
 
 def fetch_data_from_database(APP_ROOT, DATA_FILE) -> DataFrame:
     """This file return csv file that is being treated as database and return type is Dataframe"""
@@ -21,3 +23,30 @@ def convert_df_json(df: DataFrame, json):
             temp_dict[key] = todo[idx]
         todos.append(temp_dict)
     return todos
+
+
+
+# class Moment(Enum):
+#     NOW = now
+    
+#     TOMORROW = tomorrow
+
+#     YESTERDAY = yesterday
+
+
+def task_moment(moment):
+    now = f'({datetime.now().strftime("%d/%m/%Y %H:%M:%S")})'
+    tomorrow = f'({datetime.now() + timedelta(1)})'
+    yesterday = f'({datetime.now() - timedelta(1)})'
+    if moment == 'now' or moment == 'today':
+        return now
+    if moment == 'tomorrow':
+        return tomorrow
+    if moment == 'yesterday':
+        return yesterday
+    
+    try:
+        parse_moment = int(moment)
+        return f'({datetime.now() + timedelta(parse_moment)})'
+    except Exception as e:
+        return "Invalid input"
