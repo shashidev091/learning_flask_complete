@@ -61,19 +61,15 @@ def add_todo():
 
 @app.patch('/todos/<int:task_id>')
 def update_todo(task_id):
-    # complete today
     df = fetch_data_from_database()
     element = df[df['id'] == task_id]
-    # print(df.loc[task_id - 1])
     element["task"] = "This world need a great developer who can unleash the power of clustering in pc."
     print(element['task'])
     if element.empty:
         return f"task_id = {task_id} not found, enter valid task id.🦥"
     else:
-        todos = get_todos()
-        remove(DATA_FILE)
-        with open(DATA_FILE, 'w') as csv_file:
-            csv_writer = csv.writer(csv_file)
+        df.to_csv(DATA_FILE, index=False)
+        print("")
 
     return element.to_json()
 
