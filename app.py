@@ -8,10 +8,12 @@ from os import path, listdir, remove
 import csv
 import json
 from utils import fetch_data_from_database, convert_df_json, task_moment
+from requests import get
 
 app = Flask(__name__)
 APP_ROOT = app.root_path
 DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
+ANIME_FILE = path.join(APP_ROOT, 'server_database/anime_storage.json')
 
 
 # get todos
@@ -48,7 +50,7 @@ def add_todo():
                 header.insert(0, 'id')
                 csv_writer.writerow(header)
                 csv_writer.writerow(
-                    [1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower()) ])
+                    [1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower())])
         else:
             with open(DATA_FILE, 'a') as csv_file:
                 csv_writer = csv.writer(csv_file)
@@ -72,3 +74,63 @@ def update_todo(task_id):
         print("")
 
     return element.to_json()
+
+
+# Anime management Api's
+
+@app.get("/anime")
+def get_animes():
+    # get all animes
+    # keys = ('title', 'duration', 'status', 'times_watch', 'started_at',
+    #         'completed_at', 'progress_episode', 'genre', 'total_episodes')
+    anime = [
+        {
+            'title': 'Death Note',
+            'duration': '23m',
+            'status': 'Finished Airing',
+            'times_watch': 3,
+            'started_at': 'Sat Jun 18 2015 18:23:08 GMT+0530',
+            'completed_at': 'Sat Jun 20 2015 18:23:08 GMT+0530',
+            'progress_eposode': 'Completed',
+            'genre': ('Mystery', 'Shounen', 'Supernatural', 'Police', 'Psychological', 'Thriller'),
+            'total_episodes': 37
+        }
+    ]
+
+    df = DataFrame(anime)
+    df.to_json(ANIME_FILE)
+
+    return anime
+
+
+# @app.get('/save_anime_data')
+# def download_any_anime_list():
+#     main_list = {}
+#     flag = True
+#     item = 0
+#     while flag:
+#         data = get(f"https://myanimelist.net/animelist/Akarin/load.json?offset={item}&status=7")
+#         json_loads = json.loads(data.content.decode('utf-8'))
+#         if len(json_loads) <= 0:
+#             flag = False
+#             break
+#         print(len(json_loads), item)
+#         main_list[str(item)] = json_loads
+#         item += 300
+        
+    
+#     with open(path.join(APP_ROOT, 'server_database/anime_data3.json'), 'w', encoding="utf-8") as json_file:
+#         json_file.write(json.dumps(main_list))
+
+#     return main_list
+
+# @app.get('/arrange')
+# def arrange_data():
+#     my_anime_list = []
+#     with open(path.join(APP_ROOT, 'server_database/anime_data.json'), 'r') as json_file:
+#         json_dict = json.loads(json_file.read())
+#         length = 0
+#         for key in json_dict.keys():
+#             length += len(json_dict[key])
+    
+#     return str(length)
