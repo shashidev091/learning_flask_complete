@@ -12,6 +12,7 @@ from utils import fetch_data_from_database, convert_df_json, task_moment
 app = Flask(__name__)
 APP_ROOT = app.root_path
 DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
+ANIME_FILE = path.join(APP_ROOT, 'server_database/anime_storage.json')
 
 
 # get todos
@@ -48,7 +49,7 @@ def add_todo():
                 header.insert(0, 'id')
                 csv_writer.writerow(header)
                 csv_writer.writerow(
-                    [1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower()) ])
+                    [1, req.get('task'), req.get('status'), task_moment(req.get('created_at').lower())])
         else:
             with open(DATA_FILE, 'a') as csv_file:
                 csv_writer = csv.writer(csv_file)
@@ -72,3 +73,27 @@ def update_todo(task_id):
         print("")
 
     return element.to_json()
+
+
+# Anime management Api's
+
+@app.get("/anime")
+def get_animes():
+    # get all animes
+    # keys = ('title', 'duration', 'status', 'times_watch', 'started_at',
+    #         'completed_at', 'progress_episode', 'genre', 'total_episodes')
+    anime = [
+        {
+            'title': 'Death Note',
+            'duration': '23m',
+            'status': 'Finished Airing',
+            'times_watch': 3,
+            'started_at': 'Sat Jun 18 2015 18:23:08 GMT+0530',
+            'completed_at': 'Sat Jun 20 2015 18:23:08 GMT+0530',
+            'progress_eposode': 'Completed',
+            'genre': ('Mystery', 'Shounen', 'Supernatural', 'Police', 'Psychological', 'Thriller'),
+            'total_episodes': 37
+        }
+    ]
+
+    return anime
