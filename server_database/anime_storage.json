@@ -1,0 +1,20 @@
+{
+  "title": { "0": "Death Note" },
+  "duration": { "0": "23m" },
+  "status": { "0": "Finished Airing" },
+  "times_watch": { "0": 3 },
+  "started_at": { "0": "Sat Jun 18 2015 18:23:08 GMT+0530" },
+  "completed_at": { "0": "Sat Jun 20 2015 18:23:08 GMT+0530" },
+  "progress_eposode": { "0": "Completed" },
+  "genre": {
+    "0": [
+      "Mystery",
+      "Shounen",
+      "Supernatural",
+      "Police",
+      "Psychological",
+      "Thriller"
+    ]
+  },
+  "total_episodes": { "0": 37 }
+}

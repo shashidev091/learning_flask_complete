@@ -96,4 +96,7 @@ def get_animes():
         }
     ]
 
+    df = DataFrame(anime)
+    df.to_json(ANIME_FILE)
+
     return anime
