@@ -8,6 +8,7 @@ from os import path, listdir, remove
 import csv
 import json
 from utils import fetch_data_from_database, convert_df_json, task_moment
+from requests import get
 
 app = Flask(__name__)
 APP_ROOT = app.root_path
@@ -100,3 +101,34 @@ def get_animes():
     df.to_json(ANIME_FILE)
 
     return anime
+
+
+@app.get('/save_anime_data')
+def download_any_thing():
+    url = request.get_json()['url']
+    url_new = f"https://myanimelist.net/animelist/Akarin/load.json?offset=0&status=7"
+    # data = get(url)
+
+    # json_data = json.loads(data.content)
+    # json_dumps = json.dumps(data.content.decode("utf-8"))
+    # with open(path.join(APP_ROOT, 'server_database/anime_data2.json'), 'w', encoding="utf-8") as json_file:
+    #     json_file.write(json_dumps)
+    # df.to_json(path.join(APP_ROOT, 'server_database/anime_data.json'))
+    main_list = {}
+    flag = True
+    item = 0
+    while flag:
+        data = get(f"https://myanimelist.net/animelist/Akarin/load.json?offset={item}&status=7")
+        json_loads = json.loads(data.content.decode('utf-8'))
+        if len(json_loads) <= 0:
+            flag = False
+            break
+        print(len(json_loads), item)
+        main_list[str(item)] = json_loads
+        item += 300
+        
+    
+    with open(path.join(APP_ROOT, 'server_database/anime_data3.json'), 'w', encoding="utf-8") as json_file:
+        json_file.write(json.dumps(main_list))
+
+    return main_list
