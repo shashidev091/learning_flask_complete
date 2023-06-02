@@ -9,11 +9,15 @@ import csv
 import json
 from utils import fetch_data_from_database, convert_df_json, task_moment
 from requests import get
+import logging
+import time
 
 app = Flask(__name__)
 APP_ROOT = app.root_path
 DATA_FILE = path.join(APP_ROOT, 'server_database/datastorage.csv')
 ANIME_FILE = path.join(APP_ROOT, 'server_database/anime_storage.json')
+
+# logging.basicConfig(filename='logs.log', format="%(levelname)s:%(name)s:%(message)s")
 
 
 # get todos
@@ -134,3 +138,13 @@ def get_animes():
 #             length += len(json_dict[key])
     
 #     return str(length)
+
+@app.get('/logger')
+def learn_logger():
+    logging.info("This is a default logger")
+    return 'loggin working'
+
+@app.get('/rust')
+def rust_home():
+
+    return render_template('rust_learning/rust_base.html')
