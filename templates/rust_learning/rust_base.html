@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% block title %} Rust | Learning | Developing {%endblock %}
+{% block body_content %}
+<br>
+<div class="container">
+  <div class="card">
+    <h5 class="card-header">Variables</h5>
+    <div class="card-body">
+      <p class="card-text">
+        <code>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          two = 2;
+          <br>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          hello = "hello;
+          <br>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          j = 'j;
+          <br>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          my_half = 0.5;
+          <br>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let mut</span
+          >
+          my_name = "Shashi;
+          <br>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          your_half = my_half;
+          <br />
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          x = add(1, 2);
+        </code>
+      </p>
+    </div>
+  </div><br>
+  <div class="card">
+    <h5 class="card-header">Anatomy of a function</h5>
+    <div class="card-body">
+      <h5 class="card-title">First function</h5>
+      <p class="card-text">
+        <code>
+          &ensp;fn add(a: i32, b:i32) -> i32 { <br />
+          &ensp; &ensp; a + b <br />
+          &ensp;} <br />
+          <br />
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          x = add(1, 2);
+        </code>
+      </p>
+      <br>
+    </div>
+  </div>
+  <br />
+  <div class="card">
+    <h5 class="card-header">The println macro</h5>
+    <div class="card-body">
+      <p class="card-text">
+        <code>
+          <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          x = 43;
+          <span
+            style="
+              color: rgb(103, 205, 92);
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >println!</span
+          >("hello");
+          <br>
+          <span
+            style="
+              color: rgb(103, 205, 92);
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >println!</span
+          >("{:?}, life");
+          <br>
+          <span
+            style="
+              color: rgb(103, 205, 92);
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >println!</span
+          >("{life:?}");
+        </code>
+        <p>:? is a debug denotion </p>
+      </p>
+    </div>
+  </div>
+  <br>
+  <div class="card">
+    <h5 class="card-header">Conditions</h5>
+    <div class="card-body">
+      <p class="card-text">
+        <code>
+            <span
+            style="
+              color: indianred;
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >let</span
+          >
+          x = 99;<br>
+          if a > 99 { <br>
+            <span
+            style="
+              color: rgb(103, 205, 92);
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >println!</span
+          >("Huge Number"); <br>
+          } else { <br>
+            <span
+            style="
+              color: rgb(103, 205, 92);
+              font-weight: bolder;
+              font-family: monospace;
+            "
+            >println!</span>
+            ("Small number");<br>
+          }
+        </code>
+      </p>
+      <br>
+    </div>
+  </div>
+</div>
+{% endblock %}
